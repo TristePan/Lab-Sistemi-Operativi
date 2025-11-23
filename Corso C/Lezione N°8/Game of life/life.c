@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define GRID_ROWS 20 // y
 #define GRID_COLS 20 // x
+#define GRID_SIZE (GRID_ROWS * GRID_COLS)
 #define ALIVE '*'
 #define DEAD '.'
 
@@ -55,6 +57,7 @@ char get_cell(char *grid, int x, int y) {
 
 /* Print the grid on the screen, cleaning the terminal using the required VT100 escape sequence */
 void print_grid(char *grid) {
+    printf("\033[H\033[J"); // VT100 escape sequence to cl ear the terminal
     for (int y = 0; y < GRID_ROWS; y++) {
         for(int x = 0; x < GRID_COLS; x++) {
             printf("%c", get_cell(grid, x, y));
@@ -73,18 +76,76 @@ void set_grid(char *grid, int state) {
     }
 }
 
-int main(void) {
-    char grid[GRID_COLS * GRID_ROWS];
-    set_grid(grid, DEAD);
-    set_cell(grid, 10, 10, ALIVE);
-    print_grid(grid);
-    return 0;
+/* Return the number of living cells neighbors of x,y */
+int count_alive_neighbors(char *grid, int x, int y) {
+    int alive_count = 0;
+    for(int yo = -1; yo <= 1; yo++) {
+        for(int xo = -1; xo <= 1; xo++) {
+            if (xo == 0 && yo == 0)
+                continue; // Skip the cell itself
+            if (get_cell(grid, x + xo, y + yo) == ALIVE)
+                alive_count++;
+        }
+    }
+    return alive_count;
 }
 
-/*
 
-****
-*..*
-****
+/* Compute the new state of the grid according the rules */
+void new_state(char *old_g, char *new_g) {
+    for (int y = 0; y < GRID_ROWS; y++) {
+        for(int x = 0; x < GRID_COLS; x++) {
+            int alive_n = count_alive_neighbors(old_g, x, y);
+            int new_state = DEAD;
+            if(get_cell(old_g, x, y) == ALIVE) {
+                if(alive_n == 2 || alive_n == 3)
+                    new_state = ALIVE;
+            } else {
+                if(alive_n == 3)
+                    new_state = ALIVE;
+            }
+            set_cell(new_g, x, y, new_state);
+        }
+    }
 
-*/
+}
+
+
+int main(void) {
+    char old_grid[GRID_COLS * GRID_ROWS];
+    char new_grid[GRID_COLS * GRID_ROWS];
+    
+    set_grid(old_grid, DEAD);
+    set_cell(old_grid, 10, 10, ALIVE);
+    set_cell(old_grid, 9, 10, ALIVE);
+    set_cell(old_grid, 11, 10, ALIVE);
+    set_cell(old_grid, 11, 9, ALIVE);
+    set_cell(old_grid, 10, 8, ALIVE);
+
+    while(1) {
+        new_state(old_grid, new_grid);
+        print_grid(new_grid);
+
+        usleep(100000);
+
+        new_state(new_grid, old_grid);
+        print_grid(old_grid);
+        
+        usleep(100000);
+
+    }
+
+
+    /*
+    print_grid(old_grid);
+    
+    printf("\n");
+    printf("---------------------------------------------\n");
+    printf("---------------------------------------------\n");
+    printf("\n");
+    
+    new_state(old_grid, new_grid);
+    print_grid(new_grid);
+    */
+    return 0;
+}
