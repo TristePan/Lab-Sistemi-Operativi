@@ -10,14 +10,14 @@ int main() {
     
     printf("The value of x is: %d\n", x);
 
-    y = &x; // Assegno a y l'indirizzo di memoria di x.
-    incr(y);    // Passo l'indirizzo di x alla funzione incr.
+    y = &x;     // Assegno a y l'indirizzo di memoria di x. L'operatore & restituisce l'indirizzo di memoria della variabile x.
+    incr(y);    // Passo a incr y che punta all'indirizzo di x. 
                 // La funzione incr incrementa il valore di x di 1.
+    
     /*
-    printf("The value of p is: %p\n", p);
+    printf("The value of y is: %p\n", y);
 
     // Dove abita x in memoria? Con l'operatore & posso scoprirlo.
-    p = &x; // L'operatore & restituisce l'indirizzo di memoria della variabile x.
     printf("x is stored at the address: %p\n", p);
 
     //*p = 10;  // All'indirizzo di memoria che è contenuto in p, assegna il valore 10. *p = 10 == p[0] = 10
@@ -25,8 +25,7 @@ int main() {
                 // In questo modo sto andando a scrivere in una zona di memoria non allocata per x.
                 // Comportamento indefinito (undefined behavior).
     */
-    
-
+        
     printf("The value of x is now: %d\n", x);
     return 0;
 }
