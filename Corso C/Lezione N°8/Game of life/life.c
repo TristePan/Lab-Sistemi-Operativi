@@ -112,8 +112,8 @@ void new_state(char *old_g, char *new_g) {
 
 
 int main(void) {
-    char old_grid[GRID_COLS * GRID_ROWS];
-    char new_grid[GRID_COLS * GRID_ROWS];
+    char old_grid[GRID_SIZE];
+    char new_grid[GRID_SIZE];
     
     set_grid(old_grid, DEAD);
     set_cell(old_grid, 10, 10, ALIVE);
@@ -122,17 +122,25 @@ int main(void) {
     set_cell(old_grid, 11, 9, ALIVE);
     set_cell(old_grid, 10, 8, ALIVE);
 
+    /* Method with pointers */
+    char *old = old_grid;
+    char *new = new_grid;
+    
     while(1) {
-        new_state(old_grid, new_grid);
-        print_grid(new_grid);
+        new_state(old, new);
+        print_grid(new);
 
         usleep(100000);
 
+        // Swap pointers
+        char *temp = old;
+        old = new;
+        new = temp;
+
+        /* No pointer method
         new_state(new_grid, old_grid);
         print_grid(old_grid);
-        
-        usleep(100000);
-
+        */
     }
 
 

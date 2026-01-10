@@ -1,0 +1,18 @@
+--- SCHEDA PERSONAGGIO ---
+NOME: Buf
+LIVELLO: 1
+RAZZA: Umano
+CLASSE: Bardo
+
+--- CARATTERISTICHE ---
+Forza:         11 (Mod: +0)
+Destrezza:     11 (Mod: +0)
+Costituzione:  11 (Mod: +0)
+Intelligenza:  11 (Mod: +0)
+Saggezza:      11 (Mod: +0)
+Carisma:       11 (Mod: +0)
+
+--- I TUOI HP ---
+Hp:               8
+--- VELOCITÀ ---
+Velocità:        9
