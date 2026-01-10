@@ -28,11 +28,16 @@ int main(void) {
     }
     char buf[32];
     size_t nread;
+    int i = 0;
     while(1) {
         nread = fread(buf, 1, sizeof(buf),fp);
         if(nread == 0) break;
+        // printf("[%d]: %zd\n", i,nread);
+        // i++;
         hexdump(buf, nread);
     }
+    int filesize = ftell(fp);
+    printf("The real size of the file is: %d", filesize);
     fclose(fp);
 
     return 0;
