@@ -1,6 +1,8 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 int main() {
-    printf("Hello World!!\n");
+    char c = 'p';
+    // printf("Hello World!! %d\n", c);
     return 0;
 }
