@@ -16,15 +16,16 @@ Uso le struct, molto più pulite e comode:
 
 /* Iternal layout:
  * 
- * +----+----+
- * |num |den |
- * +----+----+
+ * +-+----+----+
+ * |c|num |den |
+ * +-+----+----+
+ * 
 */ 
-struct fract {
+typedef struct {
     unsigned char color;
     int num;
     int den;
-};
+}fract;
 
 
 
@@ -32,8 +33,8 @@ struct fract {
  * and denominator of the fraction.
  * The function return NULL on out of memory, otherwise the
  * faction object is returned */
-struct fract *create_fraction(int num, int den) {
-    struct fract *f = malloc(sizeof(*f));
+fract *create_fraction(int num, int den) {
+    fract *f = malloc(sizeof(*f));
     if(f == NULL) {
         return NULL; // malloc error checking.
     }
@@ -43,7 +44,7 @@ struct fract *create_fraction(int num, int den) {
     return f;
 }
 /* Simplify the provided fraction */
-void simplify_fraction(struct fract *f) {
+void simplify_fraction(fract *f) { 
     for(int d = 2; d <= f -> num && d <= f -> den; d++) {
         while(f -> num % d == 0 &&
            f -> den % d == 0) {
@@ -53,7 +54,7 @@ void simplify_fraction(struct fract *f) {
     }
 }
 
-void print_fraction(struct fract *f) {
+void print_fraction(fract *f) {
     printf("%d\n-\n%d\n", f -> num, f -> den);
 }
 
@@ -77,8 +78,8 @@ int main(void) {
         int *f = malloc(sizeof(int) * 2);
         set_fraction(f, 1, 2);
     */
-    struct fract *f1 = create_fraction(3, 4);
-    struct fract *f2 = create_fraction(10, 20);
+    fract *f1 = create_fraction(3, 4);
+    fract *f2 = create_fraction(10, 20);
     
     printf("Fraction f1:\n");    
     print_fraction(f1);
@@ -86,7 +87,7 @@ int main(void) {
     printf("\n");
 
     printf("Fraction f2:\n");
-    printf("In this fraction there is a semplification of the num and den.\nBefore simplification:\n");
+    printf("In this fraction there is a semplification of the num and den.\n\nBefore simplification:\n");
     print_fraction(f2);
     simplify_fraction(f2);
     printf("\nAfter simplification:\n");

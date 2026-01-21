@@ -148,9 +148,7 @@ void inserisci_livello(Personaggio *p) {
 }
 
 void inserisci_razza(Personaggio *p) {
-    char *input_razza;
-    input_razza = (char *)calloc(1, sizeof(char) * 30);
-    
+    char *input_razza = (char *)calloc(1, sizeof(char) * 30);
     int valida = 0;
 
     if(input_razza == NULL) {
@@ -159,17 +157,12 @@ void inserisci_razza(Personaggio *p) {
     }
 
     do {
-        printf("\n--- SELEZIONE LA RAZZA ---\n");
-        printf("- Dragonide\n");
-        printf("- Elfo\n");
-        printf("- Forgiato\n");
-        printf("- Gnomo\n");
-        printf("- Halfling\n");
-        printf("- Mezzelfo\n");
-        printf("- Mezzorco\n");
-        printf("- Nano\n");
-        printf("- Umano\n");
-        printf("- Tiefling\n");
+        printf("\n--- SELEZIONA LA RAZZA ---\n");
+        printf("- Dragonide | Elfo\n");
+        printf("- Forgiato  | Gnomo\n");
+        printf("- Halfling  | Mezzelfo\n");
+        printf("- Mezzorco  | Nano\n");
+        printf("- Umano     | Tiefling\n");
         printf("Scegli la tua razza: ");
         fgets(input_razza, 15, stdin);
         input_razza[strcspn(input_razza, "\n")] = 0; // Rimuove l'invio

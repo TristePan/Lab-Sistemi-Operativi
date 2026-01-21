@@ -58,7 +58,7 @@ typedef struct {
 // ===============================
 typedef struct {
     // Code di comunicazione
-    ring_t ring;          // coda intermedia
+    ring_t ring;          // coda intermedia di 10 posti
     final_slot_t out;     // record finale a 1 slot
 
     // File da leggere

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <ctype.h>
-#include "D:\Lab_Sistemi-Operativi\Corso C\hexdump.h"
+#include "../hexdump.h"
 
 /*
 typedef struct {
