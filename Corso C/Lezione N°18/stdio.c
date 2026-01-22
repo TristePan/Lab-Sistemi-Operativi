@@ -37,7 +37,7 @@ int main(void) {
         hexdump(buf, nread);
     }
     int filesize = ftell(fp);
-    printf("The real size of the file is: %d", filesize);
+    printf("The real size of the file is: %d\n", filesize);
     fclose(fp);
 
     return 0;
