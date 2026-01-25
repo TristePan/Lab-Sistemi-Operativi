@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <semaphore.h>
 
 #define MAX_PATH 256
 #define MAX_SIZE 10
@@ -26,8 +27,8 @@ typedef struct {
     bool close;
     
     pthread_mutex_t mutex;
-    pthread_cond_t not_empty;
-    pthread_cond_t not_full;
+    sem_t sem_empty; // Conta gli slot liberi
+    sem_t sem_full; // Conta gli elementi disponibili
 }Shared_buffer;
 
 void buffer_init(Shared_buffer *buff) {
@@ -37,65 +38,79 @@ void buffer_init(Shared_buffer *buff) {
     buff -> close = false;
 
     pthread_mutex_init(&buff -> mutex, NULL);
-    pthread_cond_init(&buff -> not_empty, NULL);
-    pthread_cond_init(&buff -> not_full, NULL);
+
+    sem_init(&buff -> sem_empty, 0, MAX_SIZE);
+    sem_init(&buff -> sem_full, 0, 0);
 }
 
 void buffer_close(Shared_buffer *buff) {
     pthread_mutex_lock(&buff -> mutex);
 
     buff -> close = true;
-
-    pthread_cond_broadcast(&buff -> not_empty);
-    pthread_cond_broadcast(&buff -> not_full);
+    
     pthread_mutex_unlock(&buff -> mutex);
+
+    sem_post(&buff -> sem_empty);
+    sem_post(&buff -> sem_full);
 }
 
 void buffer_destroy(Shared_buffer *buff) {
     pthread_mutex_destroy(&buff->mutex);
-    pthread_cond_destroy(&buff->not_empty);
-    pthread_cond_destroy(&buff->not_full);
+    sem_destroy(&buff->sem_empty);
+    sem_destroy(&buff->sem_full);
 }
 
 void buffer_in(Shared_buffer *buff, Record r) {
+    // 1. Aspetto che sia spazio libero
+    sem_wait(&buff -> sem_empty);
+    
     pthread_mutex_lock(&buff -> mutex);
 
-    while(buff -> count == MAX_SIZE && !buff -> close) {
-        pthread_cond_wait(&buff -> not_full, &buff -> mutex);
-    }
+    // Controllo se il buffer è chiuso
     if(buff -> close) {
         pthread_mutex_unlock(&buff -> mutex);
+        sem_post(&buff -> sem_empty); // Restituisco il gettone per non bloccare altri
         return;
     }
 
+    // 2. Sezione critica: Inserimento senza bisogno di while/wait
     buff -> buffer[buff -> in] = r;
     buff -> in = (buff -> in + 1) % MAX_SIZE;
     buff -> count++;
 
-    pthread_cond_signal(&buff -> not_empty);
     pthread_mutex_unlock(&buff -> mutex);
+    
+    // 3. Segnalo che c'è un nuovo dato disponibile (sveglai consumatore)
+    sem_post(&buff -> sem_full);
 
 }
 
 // Da completare
 bool buffer_out(Shared_buffer *buff, Record *r) {
+    // 1. Aseptto che ci sia un dato
+    sem_wait(&buff -> sem_full);
+    
     pthread_mutex_lock(&buff -> mutex);
 
-    while(buff -> count == 0 && !buff -> close) {
-        pthread_cond_wait(&buff -> not_empty, &buff -> mutex);
-    }
-
+    // Controllo chiusura: se Chiuso e Vuoto, finiamo.
     if(buff -> count == 0 && buff -> close) {
         pthread_mutex_unlock(&buff -> mutex);
+
+        // IMPORTANTE: "Passaparola". Se siamo in tanti consumatori e il buffer chiude,
+        // devo svegliare il prossimo che potrebbe essere bloccato da sem_wait.
+        sem_post(&buff -> sem_full);
         return false;
     }
 
+    // Sezione critica: Estrazione
     *r = buff -> buffer[buff -> out];
     buff -> out = (buff -> out + 1) % MAX_SIZE;
     buff -> count--;
 
-    pthread_cond_signal(&buff -> not_full);
     pthread_mutex_unlock(&buff -> mutex);
+
+    // 3. Segnalo che c'è uno slot libero (Sveglia produttore)
+    sem_post(&buff -> sem_empty);
 
     return true;
 }
