@@ -77,7 +77,6 @@ void buffer_in(Shared_buffer *buff, Record r) {
 
 }
 
-// Da completare
 bool buffer_out(Shared_buffer *buff, Record *r) {
     pthread_mutex_lock(&buff -> mutex);
 
