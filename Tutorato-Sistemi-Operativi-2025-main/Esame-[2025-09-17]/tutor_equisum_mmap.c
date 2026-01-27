@@ -22,7 +22,7 @@
 // di terminazione (poison pill) per i consumatori.
 typedef struct {
     uint8_t v[M]; // il vettore da 12 byte
-    int     is_end; // 0 = normale, 1 = sentinella di terminazione
+    int is_end; // 0 = normale, 1 = sentinella di terminazione
 } record_t;
 
 // ===============================
