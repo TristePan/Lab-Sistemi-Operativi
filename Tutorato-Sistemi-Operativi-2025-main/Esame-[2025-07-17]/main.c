@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+
 #define MAX_QUEUE_SIZE 5
 
 // --- Utility: sezioni di stampa atomiche senza stato globale ---
